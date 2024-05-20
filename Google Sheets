@@ -1,0 +1,30 @@
+function header() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  let headers = ss.getRange("A1:D1");
+  headers.setValues([["Name", "Size", "URL", "Download"]]);
+  headers.setBackground("#9966CC");
+  headers.setFontSize(12);
+}
+
+function allFilesInFolder() {
+  const folderId = 'xxxx'; // ใส่ไอดีของโฟลเดอร์ที่ต้องการมาใส่แทนข้อความ xxxx
+  var folder = DriveApp.getFolderById(folderId);
+  var files = folder.getFiles();
+  
+  let ss = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  let lastRow = ss.getLastRow();
+  let existingFileUrls = ss.getRange("C2:C" + lastRow).getValues().flat();
+
+  while (files.hasNext()) {
+    const file = files.next();
+    const fileUrl = file.getUrl();
+    if (!existingFileUrls.includes(fileUrl)) {
+      const fileInfo = [];
+      fileInfo.push(file.getName());
+      fileInfo.push(file.getSize());
+      fileInfo.push(fileUrl);
+      fileInfo.push(file.getDownloadUrl());
+      ss.appendRow(fileInfo);
+    }
+  }
+}
